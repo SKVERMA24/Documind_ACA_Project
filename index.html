@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documind | Premium Text Chunker & Extraction</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0a15;
+            --card-bg: rgba(22, 20, 38, 0.6);
+            --border-color: rgba(255, 255, 255, 0.06);
+            --primary: #8b5cf6;
+            --primary-glow: rgba(139, 92, 246, 0.3);
+            --accent: #d946ef;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --success: #10b981;
+            --error: #ef4444;
+            --font-display: 'Outfit', sans-serif;
+            --font-sans: 'Plus Jakarta Sans', sans-serif;
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(217, 70, 239, 0.15) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        header {
+            padding: 24px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .logo-text {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 24px;
+            background: linear-gradient(to right, #ffffff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color var(--transition-speed);
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.03);
+            border-color: var(--border-color);
+        }
+
+        main {
+            flex: 1;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        @media (max-width: 1024px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            height: fit-content;
+        }
+
+        h2 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 22px;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Form styling */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            font-size: 14px;
+            resize: vertical;
+            outline: none;
+            transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+        }
+
+        /* Sliders style */
+        .slider-container {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .slider-value {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--primary-glow);
+            transition: transform 0.1s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* Drag & Drop */
+        .dropzone {
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            background: rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .dropzone:hover, .dropzone.dragover {
+            border-color: var(--primary);
+            background: rgba(139, 92, 246, 0.05);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.1);
+        }
+
+        .dropzone svg {
+            width: 48px;
+            height: 48px;
+            color: var(--text-muted);
+            transition: color var(--transition-speed);
+        }
+
+        .dropzone:hover svg {
+            color: var(--primary);
+        }
+
+        .file-info {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            padding: 12px 18px;
+            border-radius: 12px;
+            width: 100%;
+        }
+
+        .file-info-text {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .remove-file {
+            background: none;
+            border: none;
+            color: var(--error);
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Buttons */
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 16px 28px;
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            box-shadow: 0 4px 15px var(--primary-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: var(--text-muted);
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Results Panel */
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        .results-meta {
+            display: flex;
+            gap: 20px;
+        }
+
+        .meta-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px 18px;
+            text-align: center;
+        }
+
+        .meta-val {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--accent);
+        }
+
+        .meta-lbl {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .chunks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-height: 700px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        /* Custom Scrollbar */
+        .chunks-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chunks-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chunks-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .chunks-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .chunk-card {
+            background: rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 18px;
+            position: relative;
+            transition: all var(--transition-speed);
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .chunk-card:hover {
+            border-color: rgba(139, 92, 246, 0.4);
+            transform: translateX(4px);
+            background: rgba(139, 92, 246, 0.02);
+        }
+
+        .chunk-badge {
+            position: absolute;
+            top: 14px;
+            left: 18px;
+            background: rgba(139, 92, 246, 0.2);
+            color: #c084fc;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: var(--font-display);
+        }
+
+        .chunk-actions {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            transition: all var(--transition-speed);
+        }
+
+        .copy-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .chunk-content {
+            margin-top: 24px;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            color: #e5e7eb;
+        }
+
+        .placeholder-message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 0;
+            color: var(--text-muted);
+            text-align: center;
+            gap: 16px;
+        }
+
+        .placeholder-message svg {
+            width: 64px;
+            height: 64px;
+            opacity: 0.3;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #1e1b4b;
+            border: 1px solid var(--primary);
+            border-radius: 10px;
+            padding: 12px 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-color: var(--success);
+        }
+
+        .toast.error {
+            border-color: var(--error);
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            font-size: 13px;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <div class="logo-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scissors"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="9.8" y1="8.2" x2="21" y2="19.4"/><line x1="9.8" y1="15.8" x2="21" y2="4.6"/></svg>
+            </div>
+            <span class="logo-text">Documind</span>
+        </div>
+        <div class="nav-links">
+            <a href="/docs" target="_blank">API Docs</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Left Panel: Input & Config -->
+        <div class="panel">
+            <h2>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                Input & Parameters
+            </h2>
+
+            <div class="input-group">
+                <label for="text-input">Raw Text Input</label>
+                <textarea id="text-input" placeholder="Paste your large text content here to split it into chunks..."></textarea>
+            </div>
+
+            <div class="dropzone" id="file-dropzone">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <div>
+                    <p style="font-weight: 600; margin-bottom: 4px;">Drag & Drop PDF or CSV</p>
+                    <p style="font-size: 12px; color: var(--text-muted);">or click to browse local files</p>
+                </div>
+                <input type="file" id="file-element" accept=".pdf,.csv" style="display: none;">
+            </div>
+
+            <div class="file-info" id="file-info-banner">
+                <div class="file-info-text">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="file-icon"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+                    <span id="file-name-label" style="font-weight: 500;">document.pdf</span>
+                </div>
+                <button class="remove-file" id="remove-file-btn">Remove</button>
+            </div>
+
+            <div class="slider-container">
+                <div class="slider-row">
+                    <label for="chunk-size">Chunk Size (chars)</label>
+                    <span class="slider-value" id="chunk-size-val">50</span>
+                </div>
+                <input type="range" id="chunk-size" min="10" max="1000" value="50" step="5">
+            </div>
+
+            <div class="slider-container">
+                <div class="slider-row">
+                    <label for="chunk-overlap">Chunk Overlap (chars)</label>
+                    <span class="slider-value" id="chunk-overlap-val">10</span>
+                </div>
+                <input type="range" id="chunk-overlap" min="0" max="300" value="10" step="1">
+            </div>
+
+            <button class="btn" id="process-btn">
+                <div class="spinner" id="btn-spinner"></div>
+                <span id="btn-text">Generate Chunks</span>
+            </button>
+        </div>
+
+        <!-- Right Panel: Results -->
+        <div class="panel">
+            <div class="results-header">
+                <h2>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                    Split Results
+                </h2>
+                <div class="results-meta">
+                    <div class="meta-card">
+                        <div class="meta-val" id="total-chunks-count">0</div>
+                        <div class="meta-lbl">Chunks</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chunks-list" id="chunks-container">
+                <div class="placeholder-message" id="results-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 17h6"/><path d="M9 13h6"/><path d="M9 9h6"/></svg>
+                    <div>
+                        <p style="font-weight: 500; margin-bottom: 4px;">No Output Generated Yet</p>
+                        <p style="font-size: 13px; color: var(--text-muted);">Enter text or upload a file, then click "Generate Chunks"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Documind. Engineered with FastAPI, LangChain, and modern design principles.</p>
+    </footer>
+
+    <!-- Toast Notification Container -->
+    <div class="toast" id="toast-notification">
+        <span id="toast-message">Copied to clipboard!</span>
+    </div>
+
+    <script>
+        // DOM Elements
+        const textInput = document.getElementById('text-input');
+        const fileDropzone = document.getElementById('file-dropzone');
+        const fileElement = document.getElementById('file-element');
+        const fileInfoBanner = document.getElementById('file-info-banner');
+        const fileNameLabel = document.getElementById('file-name-label');
+        const removeFileBtn = document.getElementById('remove-file-btn');
+        const chunkSizeSlider = document.getElementById('chunk-size');
+        const chunkOverlapSlider = document.getElementById('chunk-overlap');
+        const chunkSizeVal = document.getElementById('chunk-size-val');
+        const chunkOverlapVal = document.getElementById('chunk-overlap-val');
+        const processBtn = document.getElementById('process-btn');
+        const btnSpinner = document.getElementById('btn-spinner');
+        const btnText = document.getElementById('btn-text');
+        const totalChunksCount = document.getElementById('total-chunks-count');
+        const chunksContainer = document.getElementById('chunks-container');
+        const resultsPlaceholder = document.getElementById('results-placeholder');
+        const toastNotification = document.getElementById('toast-notification');
+        const toastMessage = document.getElementById('toast-message');
+
+        let selectedFile = null;
+
+        // Sliders interaction
+        chunkSizeSlider.addEventListener('input', (e) => {
+            chunkSizeVal.innerText = e.target.value;
+            // Enforce chunk_overlap < chunk_size
+            const currentSize = parseInt(e.target.value);
+            const currentOverlap = parseInt(chunkOverlapSlider.value);
+            if (currentOverlap >= currentSize) {
+                chunkOverlapSlider.value = currentSize - 1;
+                chunkOverlapVal.innerText = currentSize - 1;
+            }
+            chunkOverlapSlider.max = Math.max(0, currentSize - 1);
+        });
+
+        chunkOverlapSlider.addEventListener('input', (e) => {
+            const currentSize = parseInt(chunkSizeSlider.value);
+            const currentOverlap = parseInt(e.target.value);
+            if (currentOverlap >= currentSize) {
+                chunkOverlapSlider.value = currentSize - 1;
+                chunkOverlapVal.innerText = currentSize - 1;
+            } else {
+                chunkOverlapVal.innerText = e.target.value;
+            }
+        });
+
+        // Dropzone interactions
+        fileDropzone.addEventListener('click', () => fileElement.click());
+
+        fileDropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileDropzone.classList.add('dragover');
+        });
+
+        fileDropzone.addEventListener('dragleave', () => {
+            fileDropzone.classList.remove('dragover');
+        });
+
+        fileDropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileDropzone.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileElement.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            const extension = file.name.split('.').pop().toLowerCase();
+            if (extension !== 'pdf' && extension !== 'csv') {
+                showToast("Only PDF or CSV files are supported.", "error");
+                return;
+            }
+            selectedFile = file;
+            fileNameLabel.innerText = file.name;
+            fileInfoBanner.style.display = 'flex';
+            fileDropzone.style.display = 'none';
+            textInput.disabled = true;
+            textInput.placeholder = "File uploaded. Raw text will be extracted and chunked.";
+            textInput.value = "";
+        }
+
+        removeFileBtn.addEventListener('click', () => {
+            selectedFile = null;
+            fileElement.value = "";
+            fileInfoBanner.style.display = 'none';
+            fileDropzone.style.display = 'flex';
+            textInput.disabled = false;
+            textInput.placeholder = "Paste your large text content here to split it into chunks...";
+        });
+
+        // Process request
+        processBtn.addEventListener('click', async () => {
+            const chunkSize = parseInt(chunkSizeSlider.value);
+            const chunkOverlap = parseInt(chunkOverlapSlider.value);
+
+            if (chunkOverlap >= chunkSize) {
+                showToast("Overlap must be smaller than chunk size.", "error");
+                return;
+            }
+
+            if (!selectedFile && !textInput.value.trim()) {
+                showToast("Please enter text or upload a PDF/CSV file.", "error");
+                return;
+            }
+
+            // Set loading state
+            processBtn.disabled = true;
+            btnSpinner.style.display = 'block';
+            btnText.innerText = "Processing...";
+
+            try {
+                let data;
+                if (selectedFile) {
+                    const formData = new FormData();
+                    formData.append('file', selectedFile);
+                    
+                    const extension = selectedFile.name.split('.').pop().toLowerCase();
+                    const endpoint = `/api/upload/${extension}?chunk_size=${chunkSize}&chunk_overlap=${chunkOverlap}`;
+                    
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        const err = await response.json();
+                        throw new Error(err.detail || `Server error: ${response.status}`);
+                    }
+                    data = await response.json();
+                } else {
+                    const response = await fetch('/api/split', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            text: textInput.value,
+                            chunk_size: chunkSize,
+                            chunk_overlap: chunkOverlap
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const err = await response.json();
+                        throw new Error(err.detail || `Server error: ${response.status}`);
+                    }
+                    data = await response.json();
+                }
+
+                renderChunks(data.chunks);
+                showToast("Chunks generated successfully!", "success");
+
+            } catch (err) {
+                console.error(err);
+                showToast(err.message, "error");
+            } finally {
+                processBtn.disabled = false;
+                btnSpinner.style.display = 'none';
+                btnText.innerText = "Generate Chunks";
+            }
+        });
+
+        function renderChunks(chunks) {
+            resultsPlaceholder.style.display = 'none';
+            chunksContainer.innerHTML = '';
+            totalChunksCount.innerText = chunks.length;
+
+            if (chunks.length === 0) {
+                chunksContainer.innerHTML = `
+                    <div style="text-align: center; color: var(--text-muted); padding: 40px 0;">
+                        No chunks created. The source text was too short relative to chunk parameters.
+                    </div>
+                `;
+                return;
+            }
+
+            chunks.forEach((chunk, index) => {
+                const card = document.createElement('div');
+                card.className = 'chunk-card';
+                card.innerHTML = `
+                    <span class="chunk-badge">Chunk ${index + 1}</span>
+                    <div class="chunk-actions">
+                        <button class="copy-btn" title="Copy to Clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                        </button>
+                    </div>
+                    <div class="chunk-content"></div>
+                `;
+
+                // Set content safely via textContent to avoid XSS
+                card.querySelector('.chunk-content').textContent = chunk;
+
+                // Copy button functionality
+                card.querySelector('.copy-btn').addEventListener('click', () => {
+                    navigator.clipboard.writeText(chunk).then(() => {
+                        showToast(`Copied Chunk ${index + 1}!`, "success");
+                    }).catch(() => {
+                        showToast("Failed to copy text.", "error");
+                    });
+                });
+
+                chunksContainer.appendChild(card);
+            });
+        }
+
+        function showToast(message, type = "success") {
+            toastMessage.innerText = message;
+            toastNotification.className = `toast show ${type}`;
+            
+            setTimeout(() => {
+                toastNotification.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
