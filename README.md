@@ -22,16 +22,3 @@ Documind is an intelligent Document Assistant designed to convert unstructured d
 - **Vector Database:** ChromaDB / Qdrant / Redis Vector Search
 
 ---
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-Ensure you have the following installed on your machine:
-- Python 3.9+ or Node.js (depending on your core backend implementation)
-- Package manager (`pip` or `npm`)
-
-### 1. Clone the Repository
-```bash
-git clone [https://github.com/SKVERMA24/Documind_ACA_Project.git](https://github.com/SKVERMA24/Documind_ACA_Project.git)
-cd Documind_ACA_Project
